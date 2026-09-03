@@ -55,13 +55,14 @@ The following steps are conducted to get the dataset ready for analysis:
 After processing the data cleaning, I had a merged dataset consists of 83782 recipes including totally three columns have missing values: 'name' (1 missing), 'description (70 missing), and 'avg_rating' (2609 missing).
 
 Here is the first 5 rows of the cleaned DataFrame:
-| name | id | minutes | submitted | n_steps | avg_rating | day_of_month |
-|:---|---:|---:|:---|---:|---:|---:|
-| 1 brownies in the world best ever | 333281 | 40 | 2008-10-27 00:00:00 | 10 | 4 | 27 |
-| 1 in canada chocolate chip cookies | 453467 | 45 | 2011-04-11 00:00:00 | 12 | 5 | 11 |
-| 412 broccoli casserole | 306168 | 40 | 2008-05-30 00:00:00 | 6 | 5 | 30 |
-| millionaire pound cake | 286009 | 120 | 2008-02-12 00:00:00 | 7 | 5 | 12 |
-| 2000 meatloaf | 475785 | 90 | 2012-03-06 00:00:00 | 17 | 5 | 6 |
+
+| name                               |     id | minutes | submitted           | n_steps | avg_rating | day_of_month |
+| :--------------------------------- | -----: | ------: | :------------------ | ------: | ---------: | -----------: |
+| 1 brownies in the world best ever  | 333281 |      40 | 2008-10-27 00:00:00 |      10 |          4 |           27 |
+| 1 in canada chocolate chip cookies | 453467 |      45 | 2011-04-11 00:00:00 |      12 |          5 |           11 |
+| 412 broccoli casserole             | 306168 |      40 | 2008-05-30 00:00:00 |       6 |          5 |           30 |
+| millionaire pound cake             | 286009 |     120 | 2008-02-12 00:00:00 |       7 |          5 |           12 |
+| 2000 meatloaf                      | 475785 |      90 | 2012-03-06 00:00:00 |      17 |          5 |            6 |
 
 ### Univariate Analysis
 
@@ -85,17 +86,7 @@ The distribution is heavily left-skewed, with the majority of recipes is rated a
   frameborder="0"
 ></iframe>
 
-This scatter plot shows every recipe's average rating against its cooking
-time (recipes above the 99th percentile of `minutes` are excluded, as
-discussed in Data Cleaning). The plot shows pronounced vertical banding
-rather than a smooth cloud of points — this is expected, since
-`avg_rating` only takes a limited set of discrete values (most recipes
-have relatively few reviews, so their average lands on a small number of
-common fractions like 4.0, 4.5, or 5.0). No strong linear relationship is
-visually obvious, though there's a slight tendency for points with very
-long cooking times to sit somewhat lower on the rating axis. This
-motivates a more targeted look at the relationship using grouped
-statistics below.
+The scatter plot shows the relationship between every recipe's average rating against its cooking time (only contains below the 99th percentile of minutes). The figure shows vertical banding rather than a specific shape cloud of points since most recipes only receive limited number of reviews leading to the common fractions. There is no linear relationship and most of the points gather at the right lower of the figure proving that most of the high rating recipes take under 200 minutes for cooking.
 
 ### Interesting Aggregates
 
@@ -106,17 +97,7 @@ statistics below.
 | 61-120 min | 11840 | 4.627 |      5 | 0.653 |
 | 120+ min   |  7566 | 4.588 |      5 | 0.676 |
 
-Grouping recipes by cooking time and looking at their average rating
-statistics reveals a small but consistent pattern: mean rating decreases
-slightly as cooking time increases, from 4.645 for recipes under 30
-minutes down to 4.588 for recipes over 120 minutes — a gap of about 0.06
-points. The median is 5.0 in every group, reflecting the strong
-left-skew seen throughout this dataset, so the differences show up in the
-mean rather than the median. Recipe counts also drop off sharply for
-longer cooking times (36,419 recipes take 30 minutes or less, versus only
-7,566 taking over 2 hours), meaning the higher-time groups are estimated
-from noticeably less data. This is the relationship formally tested in
-the Hypothesis Testing section below.
+The aggregate table about grouping recipes by cooking time reveal interesting patterns of its distribution: as the cooking time increase, the mean rating decreases slightly, from 4.645 for recipes within 30 minutes down to 4.588 for recipes required more than 120 minutes. It reflects the string left-skw seen throughout the plot when the gap is 0.06 with the median is 5.0 in every group. Moreover, the difference in number of recipe between 0-30 and 120+ minutes group is significant as 5 times. The relationship formally tested when move to the Hypothessi Testing section below
 
 ---
 

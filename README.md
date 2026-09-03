@@ -144,12 +144,11 @@ The two distributions above appear visually similar in shape, but with a
 large sample size (~80,000 recipes), even a small shift in the mean
 number of steps can be detected as statistically significant.
 
-Since the p-value (0.0) is far below the significance level of 0.05, we
+With the p-value below the significance level of 0.05, we
 **reject the null hypothesis**. There is strong evidence that missingness
 in `avg_rating` depends on `n_steps` — recipes with a missing rating tend
 to have a different average number of steps than recipes with a rating.
-This is consistent with **MAR**: missingness is explainable by an
-observed column in the dataset.
+It is fit to the **MAR**: a missingness type which occur when a column is explainable by an observed column.
 
 #### 2. Missingness vs. Day of Month
 
@@ -176,7 +175,7 @@ average rating.
   frameborder="0"
 ></iframe>
 
-Since the p-value (0.722) is far above the significance level of 0.05, we
+The p-value (0.722) is much bigger than the significance level of 0.05, we
 **fail to reject the null hypothesis**. There is insufficient evidence
 that missingness in `avg_rating` depends on `day_of_month` — the day a
 recipe was submitted does not appear to be related to whether its rating
@@ -225,12 +224,20 @@ throughout this analysis.
 
 **p-value:** 0.0
 
+**p-value:** 0.0
+
 <iframe
-  src="assets/rating_by_time_group.html"
+  src="assets/hypothesis_test_distribution.html"
   width="800"
-  height="600"
+  height="500"
   frameborder="0"
 ></iframe>
+
+The histogram above shows the empirical distribution of the test statistic
+under 1,000 permutations of the null hypothesis, with the observed
+statistic (0.0564) marked in red. Since the observed statistic falls far
+outside the bulk of the simulated distribution, this visually confirms
+the p-value of 0.0.
 
 Since the p-value (0.0) is far below the significance level of 0.05, we
 reject the null hypothesis. There is strong evidence that average rating

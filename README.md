@@ -248,14 +248,11 @@ assumption that the null hypothesis holds.
 ## Framing a Prediction Problem
 
 **Prediction Problem:** This is a **regression problem**. I am predicting
-`avg_rating`, a continuous value ranging from 1 to 5, rather than a
-discrete class label.
+`avg_rating`, a continuous value ranging from 1 to 5.
 
 **Response Variable:** `avg_rating` — the average rating a recipe
-receives. I chose this because it directly extends the question explored
-in Steps 1–4 (the relationship between cooking time and rating), keeping
-the project's theme coherent from the exploratory analysis through to
-prediction.
+receives. I chose this because it is an extension of the question explored
+in Steps 1–4 (the relationship between cooking time and rating), the theme of the project keeps smoothly and it is also a great features representing ratings.
 
 **Evaluation Metric:** I use **RMSE (Root Mean Squared Error)**. I chose
 RMSE over an alternative like MAE (Mean Absolute Error) because RMSE

@@ -187,7 +187,7 @@ depends on (`n_steps`) and one column it does not depend on
 
 ---
 
-## Step 4: Hypothesis Testing
+## Hypothesis Testing
 
 **Question:** Do recipes with short cooking times (0–30 min) have a
 different average rating than recipes with long cooking times (120+
@@ -247,15 +247,36 @@ assumption that the null hypothesis holds.
 
 ## Framing a Prediction Problem
 
-The prediction task is a **regression problem**.
+**Prediction Problem:** This is a **regression problem**. I am predicting
+`avg_rating`, a continuous value ranging from 1 to 5, rather than a
+discrete class label.
 
-The response variable is:
+**Response Variable:** `avg_rating` — the average rating a recipe
+receives. I chose this because it directly extends the question explored
+in Steps 1–4 (the relationship between cooking time and rating), keeping
+the project's theme coherent from the exploratory analysis through to
+prediction.
 
-`avg_rating`
+**Evaluation Metric:** I use **RMSE (Root Mean Squared Error)**. I chose
+RMSE over an alternative like MAE (Mean Absolute Error) because RMSE
+penalizes large errors more heavily than small ones (by squaring
+residuals before averaging), which is appropriate here since a model that
+is wildly wrong about a recipe's rating (e.g., predicting 5.0 for a
+recipe that's actually rated 1.0) is a more serious failure than several
+small, spread-out errors. Since `avg_rating` is continuous, RMSE is also
+directly interpretable in the original units of the response variable
+(rating points), which makes the error easy to reason about.
 
-The goal is to predict the average rating of a recipe using information that would be available before users rate the recipe.
-
-I evaluate the models using **Root Mean Squared Error (RMSE)** because the target variable is quantitative and RMSE measures the typical magnitude of prediction error while penalizing larger errors more heavily.
+**Features and Time-of-Prediction:** All features used in this model are
+known **before any ratings exist** for a recipe — that is, at the moment
+a recipe is submitted, before any user has cooked or reviewed it. This
+includes `minutes`, `n_steps`, `n_ingredients`, `tags`, `nutrition`, and
+`submitted`. I explicitly exclude any information derived from
+`RAW_interactions.csv` (review counts, review text, or the ratings
+themselves), since those only exist _after_ a recipe has already
+accumulated ratings — using them would leak information from the future
+relative to the prediction task and defeat the purpose of predicting a
+rating before it exists.
 
 ---
 

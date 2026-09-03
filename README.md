@@ -68,33 +68,49 @@ Here is the first 5 rows of the cleaned DataFrame:
   frameborder="0"
 ></iframe>
 
-The distribution of average recipe ratings is heavily **left-skewed**: over
-70% of recipes have an average rating of 4.5 or higher, and more than half
-(57%) have an average rating of exactly 5.0. Very few recipes (under 2%)
-have an average rating below 3. This suggests that once a recipe on
-food.com accumulates ratings, it tends to be rated quite favorably — likely
-because users self-select into rating recipes they've already chosen to
-cook (and presumably liked enough to try), rather than rating a random
-sample of all recipes. This skew is worth keeping in mind for later
-analysis, since it means most of the variation we're trying to explain
-lives in a fairly narrow band near the top of the scale.
+The distribution is heavily left-skewed, with the majority of recipes is rated as 5 stars. The figue shows that very few ratings below 3.0, meaning the low-rated recipes are rare in the dataset. The trend suggests strong positive rating bias, once a new recipe is submitted, it is likely to rated from 4-5.
 
 ### Bivariate Analysis
 
-[INSERT COOKING TIME VS AVG RATING PLOT HERE]
+<iframe
+  src="assets/rating_vs_cooking_time_scatter.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
 
-Explain the apparent relationship between cooking time and average rating.
+This scatter plot shows every recipe's average rating against its cooking
+time (recipes above the 99th percentile of `minutes` are excluded, as
+discussed in Data Cleaning). The plot shows pronounced vertical banding
+rather than a smooth cloud of points — this is expected, since
+`avg_rating` only takes a limited set of discrete values (most recipes
+have relatively few reviews, so their average lands on a small number of
+common fractions like 4.0, 4.5, or 5.0). No strong linear relationship is
+visually obvious, though there's a slight tendency for points with very
+long cooking times to sit somewhat lower on the rating axis. This
+motivates a more targeted look at the relationship using grouped
+statistics below.
 
 ### Interesting Aggregates
 
-[INSERT TIME-GROUP AGGREGATE TABLE HERE]
+| time_group | count |  mean | median |   std |
+| :--------- | ----: | ----: | -----: | ----: |
+| 0-30 min   | 36419 | 4.645 |      5 | 0.617 |
+| 31-60 min  | 24570 | 4.607 |      5 | 0.655 |
+| 61-120 min | 11840 | 4.627 |      5 | 0.653 |
+| 120+ min   |  7566 | 4.588 |      5 | 0.676 |
 
-Discuss mean and median ratings for:
-
-- 0–30 minutes
-- 31–60 minutes
-- 61–120 minutes
-- 120+ minutes
+Grouping recipes by cooking time and looking at their average rating
+statistics reveals a small but consistent pattern: mean rating decreases
+slightly as cooking time increases, from 4.645 for recipes under 30
+minutes down to 4.588 for recipes over 120 minutes — a gap of about 0.06
+points. The median is 5.0 in every group, reflecting the strong
+left-skew seen throughout this dataset, so the differences show up in the
+mean rather than the median. Recipe counts also drop off sharply for
+longer cooking times (36,419 recipes take 30 minutes or less, versus only
+7,566 taking over 2 hours), meaning the higher-time groups are estimated
+from noticeably less data. This is the relationship formally tested in
+the Hypothesis Testing section below.
 
 ---
 

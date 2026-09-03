@@ -268,30 +268,24 @@ a recipe is submitted, before any user follow the instruction and cook the recip
 
 ## Baseline Model
 
-The baseline model is a `LinearRegression` model using:
+The baseline model is a `LinearRegression` model using the two following features:
 
 - `minutes`
 - `n_steps`
 
 Both features are quantitative, so no categorical encoding was needed —
 each was passed through a `StandardScaler` inside a single `sklearn`
-`Pipeline` (via a `ColumnTransformer`) so that both training and
-prediction happen through one consistent, reproducible object. Recipes
+`Pipeline` (via a `ColumnTransformer`), as the result the training and prediction tasks go through one consistent, reproducible object. Recipes
 with `minutes` above the 99th percentile were excluded prior to
-train/test splitting, consistent with the outlier handling described in
-Data Cleaning.
+train/test splitting, consistent with the outlier handling as describe above from Data Cleaning phase.
 
 **Baseline Train RMSE:** 0.6396
 
 **Baseline Test RMSE:** 0.6411
 
-I consider this baseline reasonably good but not strong: the Train and
-Test RMSE are close to each other, meaning the model isn't overfitting,
+I consider the baseline is good enough but it could perform better: the Train and Test RMSE are close to each other, proving that the model isn't overfitting,
 but an RMSE of roughly 0.64 rating points (on a 1–5 scale) means the
-model's predictions are, on average, meaningfully off from the true
-rating — largely because `minutes` and `n_steps` alone were shown in
-earlier steps to have only a weak relationship with `avg_rating`. This
-motivates the additional features introduced in the Final Model below.
+model's predictions are, on average, slightly off the true value — largely because `minutes` and `n_steps` alone shows weak relationshop to `avg_rating`. To improve the model, I would like to engineer two new features in Final Model stage.
 
 ---
 
@@ -301,29 +295,23 @@ For my final model, I engineered two new features beyond the baseline:
 
 - **`years_since_submission`**: the number of years between a recipe's
   `submitted` date and the most recent submission date in the dataset,
-  computed via a `FunctionTransformer`. I included this because recipes
-  submitted longer ago have had more time to accumulate ratings and
-  visibility, which may correlate with the _stability_ and typical value
-  of their average rating.
+  `FunctionTransformer` is used for computation. I included this because recipes
+  submitted longer ago provide more information for users to decide if they want to rely on the recipes leading to change the behavior and ratings later on.
 - **`is_dessert`**: a binary indicator derived from whether "dessert"
   appears in a recipe's `tags`. I included this because dessert recipes
-  may systematically differ in how generously they're rated compared to
-  savory dishes, given the strong left-skew toward high ratings we
-  observed throughout this dataset.
+  may systematically differ in how they would rate the recipes compared to the other like savory recipes, given the strong left-skew toward high ratings we observed throughout this dataset.
 
 Both new features, along with the baseline's `minutes` and `n_steps`,
 were combined into a single `sklearn` `Pipeline` using a
 `ColumnTransformer`, so that all preprocessing and modeling happen
 through one reproducible object.
 
-I used a **`RandomForestRegressor`** as my final model, tuned via
+I decided to use **`RandomForestRegressor`** as my final model, tuned via
 **`GridSearchCV`**. Before tuning, I decided to search over
 **`max_depth`**, since it directly controls the trade-off between
 underfitting (a shallow tree that can't capture the relationship between
 features and rating) and overfitting (a very deep tree that memorizes
-noise in the training data) — this is typically the highest-leverage
-hyperparameter for a tree-based model when working with a modest number
-of engineered features.
+noise in the training data) — this is a solid hyperparameter for the selected model with modest number of engineered features above.
 
 **Best Hyperparameter (max_depth):** 5
 
@@ -337,16 +325,12 @@ of engineered features.
 
 **RMSE Improvement over Baseline:** ~0.0069
 
-The final model modestly outperforms the baseline on the test set. The
-improvement is small in absolute terms, which suggests that `minutes`,
+The final model outperforms the baseline on the test set. The improvement is recorded as increase 0.0069, which suggests that `minutes`,
 `n_steps`, `years_since_submission`, and `is_dessert` capture only a
 limited amount of the variation in `avg_rating` — consistent with what
 the EDA and hypothesis test in earlier steps showed: cooking time and
 related recipe attributes have a real but small relationship with
-rating, rather than a dominant one. The training and test RMSE remain
-close to each other, indicating the model is not meaningfully
-overfitting despite the added complexity of a `RandomForestRegressor`
-over a linear model.
+rating, rather than a dominant one. The result shows that he training and test RMSE remain close to each other, it agains show off that the overfitting does not occur despite the added complexity of a `RandomForestRegressor` over a linear model.
 
 ---
 
@@ -356,8 +340,7 @@ over a linear model.
 cooking times than for recipes with short cooking times?
 
 I split the test set into two groups using the **median cooking time
-(35.0 minutes)** as the cutoff: recipes at or below the median are
-labeled "short," and recipes above the median are labeled "long."
+(35.0 minutes)** as the cutoff: the "short" label is considered as below the median, in the opposite, the "long" label contain recipes above the median.
 
 **Evaluation Metric:** RMSE, computed separately within each group.
 
@@ -380,22 +363,9 @@ cooking time group than for the "short" cooking time group.
 
 **p-value:** 0.001
 
-I ran a permutation test with 1,000 repetitions, randomly shuffling the
-long/short group labels each time and recomputing the difference in
-group RMSE to build an empirical null distribution.
+A permutation test is conducted with the repetition numbers at 1000, the test randomly shuffling the long and short group labels each time, then continue to recompute the difference in group RMSE, building an empirical null distribution.
 
-Since the p-value (0.001) is below the significance level of 0.05, we
+With the p-value (0.0001) below the significance level of 0.05, we
 reject the null hypothesis. There is evidence that the model performs
 worse — has a higher RMSE — for recipes with long cooking times than for
-recipes with short cooking times. Because this is a statistical test
-based on an observational split of the data rather than a randomized
-controlled trial, this result does not prove that cooking time itself
-causes the model to perform worse; it indicates that the gap in RMSE
-between the two groups is unlikely to have arisen by chance alone. A
-plausible explanation is that long-cooking recipes are less common in
-the dataset (as shown in the Interesting Aggregates table), giving the
-model less data to learn from in that region of the feature space.
-
-### Conclusion
-
-State whether there is sufficient evidence that the model performs worse for long-cooking recipes.
+recipes with short cooking times. In spite of that conclusion, it does not prove that cooking time causes the model to perform worse, instead, it indicates there is a gap in RMSE between these two groups is not have arisen by chance. It is plausible to explain that recipes with long cooking time are less common in the dataset. It is a statistical test, it needs to be seen based on observational split of the data, not randomly trial.

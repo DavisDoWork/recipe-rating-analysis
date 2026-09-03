@@ -6,10 +6,6 @@ Author: Thinh Duy Do.
 
 ---
 
-Provide an introduction to your dataset, and clearly state the one question your project is centered around. Why should readers of your website care about the dataset and your question specifically?
-
-Question: Do recipes with short cooking times (0-30 min) have a different average rating than recipes with long cooking times (120+ min)?
-
 ## Introduction
 
 We are living in a world that substantial amount of information is easy to access in the Internet. Leading to the fact that more and more home cooks seek for recipes on common review flatforms. As a result, they find it challenging to select the appropriate one to cook. One of the criteria persuade them to select a particular recipe is its rating. What truly the element decide if a recipe is highly rated? The project investigate whether recipe's cooking time relate to the ratings of recipes. The study will work on subset of the raw data which was announed in 2008 on Food.com. The original dataset is used for the recommender system research paper by Majumder et al.
@@ -65,15 +61,23 @@ Here is the first 5 rows of the cleaned DataFrame:
 
 #### Distribution of Average Ratings
 
-[INSERT AVG_RATING HISTOGRAM HERE]
+<iframe
+  src="assets/avg_rating_distribution.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
 
-Explain what the distribution shows.
-
-#### Distribution of Cooking Time
-
-[INSERT MINUTES HISTOGRAM HERE]
-
-Explain the strong right skew and why the visualization may be restricted to the 99th percentile.
+The distribution of average recipe ratings is heavily **left-skewed**: over
+70% of recipes have an average rating of 4.5 or higher, and more than half
+(57%) have an average rating of exactly 5.0. Very few recipes (under 2%)
+have an average rating below 3. This suggests that once a recipe on
+food.com accumulates ratings, it tends to be rated quite favorably — likely
+because users self-select into rating recipes they've already chosen to
+cook (and presumably liked enough to try), rather than rating a random
+sample of all recipes. This skew is worth keeping in mind for later
+analysis, since it means most of the variation we're trying to explain
+lives in a fairly narrow band near the top of the scale.
 
 ### Bivariate Analysis
 

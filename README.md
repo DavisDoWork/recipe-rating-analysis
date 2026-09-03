@@ -140,6 +140,10 @@ average rating.
   frameborder="0"
 ></iframe>
 
+The two distributions above appear visually similar in shape, but with a
+large sample size (~80,000 recipes), even a small shift in the mean
+number of steps can be detected as statistically significant.
+
 Since the p-value (0.0) is far below the significance level of 0.05, we
 **reject the null hypothesis**. There is strong evidence that missingness
 in `avg_rating` depends on `n_steps` — recipes with a missing rating tend

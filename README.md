@@ -255,25 +255,14 @@ receives. I chose this because it is an extension of the question explored
 in Steps 1–4 (the relationship between cooking time and rating), the theme of the project keeps smoothly and it is also a great features representing ratings.
 
 **Evaluation Metric:** I use **RMSE (Root Mean Squared Error)**. I chose
-RMSE over an alternative like MAE (Mean Absolute Error) because RMSE
-penalizes large errors more heavily than small ones (by squaring
+RMSE over an alternative like MAE (Mean Absolute Error) since we need RMSE's characteristic in large error penalty (by squaring
 residuals before averaging), which is appropriate here since a model that
 is wildly wrong about a recipe's rating (e.g., predicting 5.0 for a
 recipe that's actually rated 1.0) is a more serious failure than several
-small, spread-out errors. Since `avg_rating` is continuous, RMSE is also
-directly interpretable in the original units of the response variable
-(rating points), which makes the error easy to reason about.
+small. Since `avg_rating` is continuous, RMSE is also help to interpret easily in the original units of the response variable, which makes the error easy to reason about.
 
-**Features and Time-of-Prediction:** All features used in this model are
-known **before any ratings exist** for a recipe — that is, at the moment
-a recipe is submitted, before any user has cooked or reviewed it. This
-includes `minutes`, `n_steps`, `n_ingredients`, `tags`, `nutrition`, and
-`submitted`. I explicitly exclude any information derived from
-`RAW_interactions.csv` (review counts, review text, or the ratings
-themselves), since those only exist _after_ a recipe has already
-accumulated ratings — using them would leak information from the future
-relative to the prediction task and defeat the purpose of predicting a
-rating before it exists.
+**Features and Time-of-Prediction:** All features include here is all known before the prediction — that is, at the moment
+a recipe is submitted, before any user follow the instruction and cook the recipe. This includes `minutes`, `n_steps`, `n_ingredients`, `tags`, `nutrition`, and `submitted`. I explicitly exclude any information derived from `RAW_interactions.csv` (review counts, review text, or the ratings themselves), as these information is collected after a recipe is rated. The project avoids to use it, otherwise, the information will be leaked from the future relative to the prediction task and defeat the purpose of predicting a rating before it exists.
 
 ---
 
@@ -284,87 +273,128 @@ The baseline model is a `LinearRegression` model using:
 - `minutes`
 - `n_steps`
 
-Both features are quantitative.
+Both features are quantitative, so no categorical encoding was needed —
+each was passed through a `StandardScaler` inside a single `sklearn`
+`Pipeline` (via a `ColumnTransformer`) so that both training and
+prediction happen through one consistent, reproducible object. Recipes
+with `minutes` above the 99th percentile were excluded prior to
+train/test splitting, consistent with the outlier handling described in
+Data Cleaning.
 
-[INSERT BASELINE TRAIN RMSE]
+**Baseline Train RMSE:** 0.6396
 
-[INSERT BASELINE TEST RMSE]
+**Baseline Test RMSE:** 0.6411
 
-Discuss what these values indicate.
+I consider this baseline reasonably good but not strong: the Train and
+Test RMSE are close to each other, meaning the model isn't overfitting,
+but an RMSE of roughly 0.64 rating points (on a 1–5 scale) means the
+model's predictions are, on average, meaningfully off from the true
+rating — largely because `minutes` and `n_steps` alone were shown in
+earlier steps to have only a weak relationship with `avg_rating`. This
+motivates the additional features introduced in the Final Model below.
 
 ---
 
 ## Final Model
 
-The final model is a `RandomForestRegressor`.
+For my final model, I engineered two new features beyond the baseline:
 
-It retains the baseline features:
+- **`years_since_submission`**: the number of years between a recipe's
+  `submitted` date and the most recent submission date in the dataset,
+  computed via a `FunctionTransformer`. I included this because recipes
+  submitted longer ago have had more time to accumulate ratings and
+  visibility, which may correlate with the _stability_ and typical value
+  of their average rating.
+- **`is_dessert`**: a binary indicator derived from whether "dessert"
+  appears in a recipe's `tags`. I included this because dessert recipes
+  may systematically differ in how generously they're rated compared to
+  savory dishes, given the strong left-skew toward high ratings we
+  observed throughout this dataset.
 
-- `minutes`
-- `n_steps`
+Both new features, along with the baseline's `minutes` and `n_steps`,
+were combined into a single `sklearn` `Pipeline` using a
+`ColumnTransformer`, so that all preprocessing and modeling happen
+through one reproducible object.
 
-and adds two engineered features:
+I used a **`RandomForestRegressor`** as my final model, tuned via
+**`GridSearchCV`**. Before tuning, I decided to search over
+**`max_depth`**, since it directly controls the trade-off between
+underfitting (a shallow tree that can't capture the relationship between
+features and rating) and overfitting (a very deep tree that memorizes
+noise in the training data) — this is typically the highest-leverage
+hyperparameter for a tree-based model when working with a modest number
+of engineered features.
 
-- `years_since_submission`
-- `is_dessert`
+**Best Hyperparameter (max_depth):** 5
 
-### Feature Engineering
+**Best Cross-Validation RMSE:** 0.6403
 
-**`years_since_submission`**
+**Final Model Train RMSE:** 0.6378
 
-Explain why recipe age may be associated with rating behavior.
+**Final Model Test RMSE:** 0.6342
 
-**`is_dessert`**
+**Baseline Test RMSE (for comparison):** 0.6411
 
-Explain why different recipe categories may receive different ratings.
+**RMSE Improvement over Baseline:** ~0.0069
 
-### Hyperparameter Tuning
-
-I tuned the Random Forest's `max_depth` hyperparameter using 5-fold cross-validation.
-
-Candidate values:
-
-`2, 3, 4, 5, 7, 10, 15, 20`
-
-The best value was:
-
-**`max_depth = 5`**
-
-### Model Performance
-
-| Model                      | Test RMSE |
-| -------------------------- | --------: |
-| Baseline Linear Regression |   [VALUE] |
-| Final Random Forest        |   [VALUE] |
-
-Explain that the final model achieved a lower RMSE than the baseline, even if the improvement is small.
+The final model modestly outperforms the baseline on the test set. The
+improvement is small in absolute terms, which suggests that `minutes`,
+`n_steps`, `years_since_submission`, and `is_dessert` capture only a
+limited amount of the variation in `avg_rating` — consistent with what
+the EDA and hypothesis test in earlier steps showed: cooking time and
+related recipe attributes have a real but small relationship with
+rating, rather than a dominant one. The training and test RMSE remain
+close to each other, indicating the model is not meaningfully
+overfitting despite the added complexity of a `RandomForestRegressor`
+over a linear model.
 
 ---
 
 ## Fairness Analysis
 
-I evaluate whether the final model performs differently for short-cooking and long-cooking recipes.
+**Question:** Does my final model perform worse for recipes with long
+cooking times than for recipes with short cooking times?
 
-The groups are defined using the median cooking time.
+I split the test set into two groups using the **median cooking time
+(35.0 minutes)** as the cutoff: recipes at or below the median are
+labeled "short," and recipes above the median are labeled "long."
 
-- **Group X:** shorter-cooking recipes
-- **Group Y:** longer-cooking recipes
+**Evaluation Metric:** RMSE, computed separately within each group.
 
-**Evaluation Metric:** RMSE
+**Null Hypothesis:** The model's RMSE is the same for the "long" cooking
+time group and the "short" cooking time group; any difference observed
+is due to random chance.
 
-**Null Hypothesis:** The model performs equally well for short- and long-cooking recipes, and any observed difference in RMSE is due to random chance.
+**Alternative Hypothesis:** The model's RMSE is higher for the "long"
+cooking time group than for the "short" cooking time group.
 
-**Alternative Hypothesis:** The model has a higher RMSE for long-cooking recipes.
+**Test Statistic:** RMSE(long) − RMSE(short).
 
-**Test Statistic:**
+**Significance Level:** 0.05
 
-`RMSE_long - RMSE_short`
+**RMSE (long-cooking group):** 0.6601
 
-[INSERT OBSERVED DIFFERENCE]
+**RMSE (short-cooking group):** 0.6106
 
-[INSERT P-VALUE]
+**Observed Statistic:** 0.0495
 
-[INSERT PERMUTATION DISTRIBUTION]
+**p-value:** 0.001
+
+I ran a permutation test with 1,000 repetitions, randomly shuffling the
+long/short group labels each time and recomputing the difference in
+group RMSE to build an empirical null distribution.
+
+Since the p-value (0.001) is below the significance level of 0.05, we
+reject the null hypothesis. There is evidence that the model performs
+worse — has a higher RMSE — for recipes with long cooking times than for
+recipes with short cooking times. Because this is a statistical test
+based on an observational split of the data rather than a randomized
+controlled trial, this result does not prove that cooking time itself
+causes the model to perform worse; it indicates that the gap in RMSE
+between the two groups is unlikely to have arisen by chance alone. A
+plausible explanation is that long-cooking recipes are less common in
+the dataset (as shown in the Interesting Aggregates table), giving the
+model less data to learn from in that region of the feature space.
 
 ### Conclusion
 

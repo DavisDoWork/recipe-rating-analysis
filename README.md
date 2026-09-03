@@ -134,6 +134,13 @@ average rating.
 
 **p-value:** 0.0
 
+<iframe
+  src="assets/missingness_n_steps.html"
+  width="800"
+  height="500"
+  frameborder="0"
+></iframe>
+
 Since the p-value (0.0) is far below the significance level of 0.05, we
 **reject the null hypothesis**. There is strong evidence that missingness
 in `avg_rating` depends on `n_steps` — recipes with a missing rating tend
@@ -158,6 +165,13 @@ average rating.
 **Observed Statistic:** 0.065
 
 **p-value:** 0.722
+
+<iframe
+  src="assets/missingness_day_of_month.html"
+  width="800"
+  height="500"
+  frameborder="0"
+></iframe>
 
 Since the p-value (0.722) is far above the significance level of 0.05, we
 **fail to reject the null hypothesis**. There is insufficient evidence

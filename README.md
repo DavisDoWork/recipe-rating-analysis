@@ -315,17 +315,17 @@ noise in the training data) — this is a solid hyperparameter for the selected 
 
 **Best Hyperparameter (max_depth):** 5
 
-**Best Cross-Validation RMSE:** 0.6403
+**Best Cross-Validation RMSE:** 0.6382
 
-**Final Model Train RMSE:** 0.6378
+**Final Model Train RMSE:** 0.6356
 
-**Final Model Test RMSE:** 0.6342
+**Final Model Test RMSE:** 0.6395
 
 **Baseline Test RMSE (for comparison):** 0.6411
 
-**RMSE Improvement over Baseline:** ~0.0069
+**RMSE Improvement over Baseline:** ~0.0017
 
-The final model outperforms the baseline on the test set. The improvement is recorded as increase 0.0069, which suggests that `minutes`,
+The final model outperforms the baseline on the test set. The improvement is recorded as increase 0.0017, which suggests that `minutes`,
 `n_steps`, `years_since_submission`, and `is_dessert` capture only a
 limited amount of the variation in `avg_rating` — consistent with what
 the EDA and hypothesis test in earlier steps showed: cooking time and
@@ -355,13 +355,13 @@ cooking time group than for the "short" cooking time group.
 
 **Significance Level:** 0.05
 
-**RMSE (long-cooking group):** 0.6601
+**RMSE (long-cooking group):** 0.6614
 
-**RMSE (short-cooking group):** 0.6106
+**RMSE (short-cooking group):** 0.6184
 
-**Observed Statistic:** 0.0495
+**Observed Statistic:** 0.0430
 
-**p-value:** 0.001
+**p-value:** 0.005
 
 A permutation test is conducted with the repetition numbers at 1000, the test randomly shuffling the long and short group labels each time, then continue to recompute the difference in group RMSE, building an empirical null distribution.
 

@@ -219,8 +219,6 @@ throughout this analysis.
 
 **p-value:** 0.0
 
-**p-value:** 0.0
-
 <iframe
   src="assets/hypothesis_test_distribution.html"
   width="800"

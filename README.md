@@ -111,35 +111,63 @@ The rating behavior is likely to the recipe's own quality. Users are more likely
 
 ### Missingness Dependency
 
-I investigated whether the missingness of `avg_rating` depends on other recipe characteristics.
+I investigated whether the missingness of `avg_rating` depends on other
+recipe characteristics by running a permutation test for each candidate
+column. In both tests, I compared the group of recipes with a missing
+`avg_rating` against the group with a non-missing `avg_rating`.
 
 #### Missingness vs. Number of Steps
 
-**Null Hypothesis:** The mean number of steps is the same for recipes with missing and non-missing average ratings.
+**Null Hypothesis:** The mean number of steps (`n_steps`) is the same for
+recipes with a missing average rating and recipes with a non-missing
+average rating.
 
-**Alternative Hypothesis:** The mean number of steps differs between recipes with missing and non-missing average ratings.
+**Alternative Hypothesis:** The mean number of steps differs between
+recipes with a missing average rating and recipes with a non-missing
+average rating.
 
 **Test Statistic:** Absolute difference in group means.
 
 **Significance Level:** 0.05
 
-[INSERT RESULT / P-VALUE HERE]
+**Observed Statistic:** 1.493
 
-State conclusion.
+**p-value:** 0.0
+
+Since the p-value (0.0) is far below the significance level of 0.05, we
+**reject the null hypothesis**. There is strong evidence that missingness
+in `avg_rating` depends on `n_steps` — recipes with a missing rating tend
+to have a different average number of steps than recipes with a rating.
+This is consistent with **MAR**: missingness is explainable by an
+observed column in the dataset.
 
 #### Missingness vs. Day of Month
 
-**Null Hypothesis:** The mean day of the month is the same for recipes with missing and non-missing average ratings.
+**Null Hypothesis:** The mean day of the month a recipe was submitted
+(`day_of_month`) is the same for recipes with a missing average rating
+and recipes with a non-missing average rating.
 
-**Alternative Hypothesis:** The mean day of the month differs between recipes with missing and non-missing average ratings.
+**Alternative Hypothesis:** The mean day of the month differs between
+recipes with a missing average rating and recipes with a non-missing
+average rating.
 
 **Test Statistic:** Absolute difference in group means.
 
 **Significance Level:** 0.05
 
-[INSERT RESULT / P-VALUE HERE]
+**Observed Statistic:** 0.065
 
-State conclusion.
+**p-value:** 0.722
+
+Since the p-value (0.722) is far above the significance level of 0.05, we
+**fail to reject the null hypothesis**. There is insufficient evidence
+that missingness in `avg_rating` depends on `day_of_month` — the day a
+recipe was submitted does not appear to be related to whether its rating
+is missing.
+
+Together, these two tests give one column that missingness clearly
+depends on (`n_steps`) and one column it does not depend on
+(`day_of_month`), as required for this analysis.
 
 ---
 

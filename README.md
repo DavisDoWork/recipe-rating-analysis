@@ -209,12 +209,7 @@ because the question is fundamentally about comparing the central
 tendency of `avg_rating` between two independent groups defined by
 cooking time, with no assumption of normality required — a permutation
 test is nonparametric and only relies on the two groups being
-exchangeable under the null hypothesis, which is reasonable here since we
-are directly asking whether group membership (short vs. long cooking
-time) affects rating. I used the _absolute_ difference rather than the
-signed difference because the alternative hypothesis is two-sided (I did
-not have a prior reason to expect ratings to be specifically higher or
-lower for either group before running the test) — an absolute-value
+exchangeable under the null hypothesis, which is appropriate since we care whether short vs. long cooking time affects rating. I used the _absolute_ difference rather than the signed difference because the alternative hypothesis is two-sided — an absolute-value
 statistic correctly captures a difference in either direction. Both
 groups were drawn from the outlier-filtered dataset (`minutes` at or
 below the 99th percentile), consistent with the cleaning applied

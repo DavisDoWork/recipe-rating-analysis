@@ -1,27 +1,41 @@
-# Cooking Time and Recipe Ratings
+# Cooking Time and Ratings Statistical Analysis
 
-This project investigates the relationship between recipe cooking time and average user ratings. It first explores patterns in recipe ratings and cooking times, then examines missingness and performs hypothesis testing. Finally, it builds regression models to predict average recipe ratings and evaluates whether model performance is fair across recipes with different cooking times.
+Cooking Time and ratings Statistical Analysis is a comprehensive data science project conducted at UCSD. The project takes place a sequence of analysis on Recipe and Rating dataset to explore the relationship between recipe cooking time and average user ratings. It first goes through the exploratory data analysis stage to missingness and performs hypothessi testing. Ultimately, The project builds regression models to predict average recipe ratings and evaluate the fairness of the model across recipes with various cooking times.
+
+Author: Thinh Duy Do.
 
 ---
 
+Provide an introduction to your dataset, and clearly state the one question your project is centered around. Why should readers of your website care about the dataset and your question specifically?
+
+Question: Do recipes with short cooking times (0-30 min) have a different average rating than recipes with long cooking times (120+ min)?
+
 ## Introduction
 
-The dataset contains recipes and user interactions from Food.com.
-
-The main question for the exploratory portion of this project is:
-
-**What is the relationship between the cooking time and average rating of recipes?**
-
-The prediction portion of the project focuses on predicting a recipe's `avg_rating` using characteristics that are available before users provide ratings.
+We are living in a world that substantial amount of information is easy to access in the Internet. Leading to the fact that more and more home cooks seek for recipes on common review flatforms. As a result, they find it challenging to select the appropriate one to cook. One of the criteria persuade them to select a particular recipe is its rating. What truly the element decide if a recipe is highly rated? The project investigate whether recipe's cooking time relate to the ratings of recipes. The study will work on subset of the raw data which was announed in 2008 on Food.com. The original dataset is used for the recommender system research paper by Majumder et al.
 
 ### Relevant Columns
 
+The first dataset, RAW_recipes.csv, consistent of 83782 distinct recipes prepresenting for 83782 rows, including the following columns:
+
+- 'name': Recipe name
+- 'id': Recipe ID
 - `minutes`: cooking time of the recipe
-- `avg_rating`: average rating received by the recipe
+- 'contributor_id': User ID who submitted the recipe
+- 'submitted': Date recipe was submitted
+- 'tags': Food.com tags for recipe
+- 'nutrition': Nutrition information in the form [calories (#), total fat (PDV), sugar (PDV), sodium (PDV), protein (PDV), saturated fat (PDV), carbohydrates (PDV)]; PDV stands for “percentage of daily value”
 - `n_steps`: number of preparation steps
-- `submitted`: date the recipe was submitted
-- `tags`: tags associated with the recipe
+- 'steps': Text for recipe steps, in order
 - `n_ingredients`: number of ingredients
+
+The second dataset named RAW_interactions.csv, consists of 731927 distinct review from the useer on particular recipe. It contains the following columns:
+
+- 'user_id': User ID
+- 'recipe_id': Recipe ID
+- 'date': Date of interaction
+- 'rating': Rating given
+- 'review': Review text
 
 ---
 
@@ -29,13 +43,23 @@ The prediction portion of the project focuses on predicting a recipe's `avg_rati
 
 ### Data Cleaning
 
-Describe:
+The following steps are conducted to get the dataset ready for analysis:
 
-- how `recipes` and `interactions` were merged
-- why ratings of `0` were replaced with missing values
-- how `avg_rating` was calculated
-- the final number of rows and columns
-- which important columns contain missing values
+1. Merged the recipes and interactions datasets: I performed a left merged of RAW_recipes.csv with inteactions.csv on recipe ID, so every single recipe is kept inspite of the missingness of reviews
+2. Replaced ratings of 0 with NaN: The star rating is decided by users with values from 1-5 excluding the star of 0. It does not reflect the bad recipe rating, instead, it is recorded as 0 by default since users not select a star rating. Treating them as NaN avoids the average ratings being dragged down, so I converted them to NaN to analyze accurately.
+3. Computed the average rating per recipe: a specific recipe contains numerous ratings from distinguish users, so I grouped the recipe ID and took the mean rating to get a single 'avg_rating' value per recipe. Finally, merge back onto the original dataset. As a result, I mostly had a dataset ('merged') used for the analysis.
+4. Converted 'submitted' to a datetime type and extarcted 'day_of_month', serving to learn whether the missingness of 'avg_rating' relattes to the day a recipe was submitted.
+
+After processing the data cleaning, I had a merged dataset consists of 83782 recipes including totally three columns have missing values: 'name' (1 missing), 'description (70 missing), and 'avg_rating' (2609 missing).
+
+Here is the first 5 rows of the cleaned DataFrame:
+| name | id | minutes | submitted | n_steps | avg_rating | day_of_month |
+|:--------------------------------------|-------:|----------:|:--------------------|----------:|-------------:|----------------:|
+| 1 brownies in the world best ever | 333281 | 40 | 2008-10-27 00:00:00 | 10 | 4 | 27 |
+| 1 in canada chocolate chip cookies | 453467 | 45 | 2011-04-11 00:00:00 | 12 | 5 | 11 |
+| 412 broccoli casserole | 306168 | 40 | 2008-05-30 00:00:00 | 6 | 5 | 30 |
+| millionaire pound cake | 286009 | 120 | 2008-02-12 00:00:00 | 7 | 5 | 12 |
+| 2000 meatloaf | 475785 | 90 | 2012-03-06 00:00:00 | 17 | 5 | 6 |
 
 ### Univariate Analysis
 

@@ -105,7 +105,9 @@ The aggregate table about grouping recipes by cooking time reveal interesting pa
 
 ### NMAR Analysis
 
-Discuss whether `avg_rating` could be NMAR and what additional information would help explain its missingness.
+There is numerous missing data from 'avg_rating' column from invalid users (they leave it as blank or literally no one review it, recorded as 0). This considers as **NMAR**
+
+The rating behavior is likely to the recipe's own quality. Users are more likely to select recipes that they are interesting and have a higher chance to leave a rating. With that being said, the mean of probability of avg_rating missingnesses depends on its value, which is a characteristic of NMAR. In spites of that idea, the missingness of 'avg_ratings' could turn to MAR when it is associated with 'n_steps' (recipes recorded wil more steps are less likely get the missingnes). We will test this formally in the Missingness Dependency section below.
 
 ### Missingness Dependency
 

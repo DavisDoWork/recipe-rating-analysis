@@ -166,7 +166,7 @@ average rating.
 
 **Observed Statistic:** 0.065
 
-**p-value:** 0.722
+**p-value:** 0.714
 
 <iframe
   src="assets/missingness_day_of_month.html"

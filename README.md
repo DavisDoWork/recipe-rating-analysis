@@ -112,11 +112,10 @@ The rating behavior is likely to the recipe's own quality. Users are more likely
 ### Missingness Dependency
 
 I investigated whether the missingness of `avg_rating` depends on other
-recipe characteristics by running a permutation test for each candidate
-column. In both tests, I compared the group of recipes with a missing
-`avg_rating` against the group with a non-missing `avg_rating`.
+recipe characteristics by running a permutation test for 'n_steps' and 'day_of_month' columns. In both tests, I compared the group of recipes with a missing
+`avg_rating` against the group with a non-missing `avg_rating`, as shown below.
 
-#### Missingness vs. Number of Steps
+#### 1. Missingness vs. Number of Steps
 
 **Null Hypothesis:** The mean number of steps (`n_steps`) is the same for
 recipes with a missing average rating and recipes with a non-missing
@@ -148,7 +147,7 @@ to have a different average number of steps than recipes with a rating.
 This is consistent with **MAR**: missingness is explainable by an
 observed column in the dataset.
 
-#### Missingness vs. Day of Month
+#### 2. Missingness vs. Day of Month
 
 **Null Hypothesis:** The mean day of the month a recipe was submitted
 (`day_of_month`) is the same for recipes with a missing average rating
@@ -185,27 +184,60 @@ depends on (`n_steps`) and one column it does not depend on
 
 ---
 
-## Hypothesis Testing
+## Step 4: Hypothesis Testing
 
-I tested whether short-cooking recipes and long-cooking recipes have different average ratings.
+**Question:** Do recipes with short cooking times (0–30 min) have a
+different average rating than recipes with long cooking times (120+
+min)?
 
-**Null Hypothesis:** Recipes taking 0–30 minutes and recipes taking more than 120 minutes have the same mean `avg_rating`.
+**Null Hypothesis:** The mean average rating is the same for recipes in
+the 0–30 minute group and recipes in the 120+ minute group.
 
-**Alternative Hypothesis:** The two groups have different mean `avg_rating`.
+**Alternative Hypothesis:** The mean average rating is different for
+recipes in the 0–30 minute group and recipes in the 120+ minute group.
 
-**Test Statistic:** Absolute difference in mean average rating.
+**Test Statistic:** Absolute difference in mean `avg_rating` between the
+two groups.
 
 **Significance Level:** 0.05
 
-[INSERT OBSERVED STATISTIC HERE]
+I chose a permutation test using the absolute difference in group means
+because the question is fundamentally about comparing the central
+tendency of `avg_rating` between two independent groups defined by
+cooking time, with no assumption of normality required — a permutation
+test is nonparametric and only relies on the two groups being
+exchangeable under the null hypothesis, which is reasonable here since we
+are directly asking whether group membership (short vs. long cooking
+time) affects rating. I used the _absolute_ difference rather than the
+signed difference because the alternative hypothesis is two-sided (I did
+not have a prior reason to expect ratings to be specifically higher or
+lower for either group before running the test) — an absolute-value
+statistic correctly captures a difference in either direction. Both
+groups were drawn from the outlier-filtered dataset (`minutes` at or
+below the 99th percentile), consistent with the cleaning applied
+throughout this analysis.
 
-[INSERT P-VALUE HERE]
+**Observed Statistic:** 0.0564
 
-[INSERT PERMUTATION DISTRIBUTION PLOT HERE]
+**p-value:** 0.0
 
-### Conclusion
+<iframe
+  src="assets/rating_by_time_group.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
 
-Explain whether you reject or fail to reject the null hypothesis and interpret the result in the context of cooking time and recipe ratings.
+Since the p-value (0.0) is far below the significance level of 0.05, we
+reject the null hypothesis. There is strong evidence that average rating
+differs between recipes with short (0–30 min) and long (120+ min)
+cooking times, with short-cooking recipes tending to have a slightly
+higher average rating. Because this is a statistical hypothesis test
+rather than a randomized controlled trial, this result does not prove
+that cooking time causes a difference in rating, nor does it establish
+the alternative hypothesis as true with certainty — it indicates that the
+observed difference is unlikely to have arisen by chance alone under the
+assumption that the null hypothesis holds.
 
 ---
 

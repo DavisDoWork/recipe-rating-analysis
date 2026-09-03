@@ -14,24 +14,30 @@ We are living in a world that substantial amount of information is easy to acces
 
 The first dataset, RAW_recipes.csv, consistent of 83782 distinct recipes prepresenting for 83782 rows, including the following columns:
 
-- 'name': Recipe name
-- 'id': Recipe ID
-- `minutes`: cooking time of the recipe
-- 'contributor_id': User ID who submitted the recipe
-- 'submitted': Date recipe was submitted
-- 'tags': Food.com tags for recipe
-- 'nutrition': Nutrition information in the form [calories (#), total fat (PDV), sugar (PDV), sodium (PDV), protein (PDV), saturated fat (PDV), carbohydrates (PDV)]; PDV stands for “percentage of daily value”
-- `n_steps`: number of preparation steps
-- 'steps': Text for recipe steps, in order
-- `n_ingredients`: number of ingredients
+| Column           | Description                                        |
+| :--------------- | :------------------------------------------------- |
+| `name`           | Recipe name                                        |
+| `id`             | Recipe ID                                          |
+| `minutes`        | Cooking time, in minutes                           |
+| `contributor_id` | User ID of the recipe's submitter                  |
+| `submitted`      | Date the recipe was submitted                      |
+| `tags`           | Food.com tags associated with the recipe           |
+| `nutrition`      | Nutrition information (calories, fat, sugar, etc.) |
+| `n_steps`        | Number of steps in the recipe                      |
+| `steps`          | Text describing each step, in order                |
+| `description`    | User-provided description of the recipe            |
+| `ingredients`    | List of ingredients used                           |
+| `n_ingredients`  | Number of ingredients                              |
 
 The second dataset named RAW_interactions.csv, consists of 731927 distinct review from the useer on particular recipe. It contains the following columns:
 
-- 'user_id': User ID
-- 'recipe_id': Recipe ID
-- 'date': Date of interaction
-- 'rating': Rating given
-- 'review': Review text
+| Column      | Description                                        |
+| :---------- | :------------------------------------------------- |
+| `user_id`   | User ID of the reviewer                            |
+| `recipe_id` | Recipe ID being reviewed                           |
+| `date`      | Date of the interaction                            |
+| `rating`    | Rating given (1–5, or 0 if no rating was selected) |
+| `review`    | Text of the written review                         |
 
 ---
 
@@ -50,7 +56,7 @@ After processing the data cleaning, I had a merged dataset consists of 83782 rec
 
 Here is the first 5 rows of the cleaned DataFrame:
 | name | id | minutes | submitted | n_steps | avg_rating | day_of_month |
-|:--------------------------------------|-------:|----------:|:--------------------|----------:|-------------:|----------------:|
+|:---|---:|---:|:---|---:|---:|---:|
 | 1 brownies in the world best ever | 333281 | 40 | 2008-10-27 00:00:00 | 10 | 4 | 27 |
 | 1 in canada chocolate chip cookies | 453467 | 45 | 2011-04-11 00:00:00 | 12 | 5 | 11 |
 | 412 broccoli casserole | 306168 | 40 | 2008-05-30 00:00:00 | 6 | 5 | 30 |

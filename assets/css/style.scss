@@ -1,0 +1,32 @@
+---
+---
+
+@import "jekyll-theme-minimal";
+
+/* Put the title on top instead of a fixed left column */
+.wrapper {
+  width: auto;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+header {
+  position: static;
+  float: none;
+  width: auto;
+  margin-bottom: 24px;
+  padding-top: 40px;
+}
+
+section {
+  float: none;
+  width: auto;
+}
+
+footer {
+  position: static;
+  float: none;
+  width: auto;
+  margin-top: 40px;
+}
